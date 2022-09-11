@@ -16,3 +16,9 @@ Ich nutze ein Kubernettes Cluster und habe die config.ini über ein Config.map e
 
 Im Docker file ird ein crontab eintrag ezeug das den MI600 alle 5 Minuten ausliest und an einen MQTT Borker sendet
 
+I have reused some script parts from https://github.com/fr00sch/bosswerk_mi600_solar and extrat the config to config.ini
+
+Docker image without config.ini, "docker push p72t19/mi6002mqtt:v0.4"
+https://hub.docker.com/repository/docker/p72t19/mi6002mqtt
+
+
