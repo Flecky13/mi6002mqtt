@@ -39,8 +39,6 @@ def on_message(client, userdata, msg):
     #https://github.com/fr00sch/bosswerk_mi600_solar
     print(msg.topic+":"+str(msg.payload))  
 
-
-
 def ping_ip(current_ip_address):
         #source: https://dmitrygolovach.com/python-ping-ip-address/
         try:
@@ -52,7 +50,6 @@ def ping_ip(current_ip_address):
                 return True
         except Exception:
                 return False
-
 
 def find_target_value(target, hp_source):
   find_target = hp_source.find(target)
@@ -66,8 +63,6 @@ def find_target_value(target, hp_source):
           
   get_target_back = hp_source[find_value_start+1:find_value_end]
   return(get_target_back)
-
-
 
 def get_Solar_values():
     try:
@@ -109,9 +104,6 @@ def get_Solar_values():
         #close connection
         r.close()
         print("Connection Closed")
-
-
-
 
 if __name__=='__main__':
 
