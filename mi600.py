@@ -122,6 +122,7 @@ if __name__=='__main__':
     client_id = config['MQTT']['client_id']
     mqtt_username = config['MQTT']['mqtt_username']
     mqtt_password = config['MQTT']['mqtt_password']
+    mqtt_retain = config['MQTT']['mqtt_retain']
 
     getDataCountPing = 0
     while getDataCountPing < int(ping_try_count):
@@ -135,5 +136,5 @@ if __name__=='__main__':
           if getDataCountPing == int(ping_try_count):
             startmsg = json.dumps({"device": {"status": {"clientname":'MI600', "status":"Offline", "power":0.0, "lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}}, skipkeys = True, allow_nan = False);
             client = connectMQTT(mqtt_ip,int(mqtt_port))
-            client.publish(topic, startmsg, qos=0, retain=False)
+            client.publish(topic, startmsg, qos=0, retain=mqtt_retain)
             client.disconnect()
