@@ -21,8 +21,11 @@ def connectMQTT(ip, port):
  return client
 
 def sendData(client, webdata_now_p, webdata_today_e, webdata_total_e):
- startmsg2 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":client, "status":"Online" }, skipkeys = True, allow_nan = False);
- startmsg1 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e, }}, skipkeys = True, allow_nan = False);
+ startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":client, "status":"Online" }, skipkeys = True, allow_nan = False);
+ print("Message2 if Online", startmsg1)
+ startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e, }}, skipkeys = True, allow_nan = False);
+ print("Message1 if Online", startmsg2)
+
  pubmsg(startmsg1, startmsg2)
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -105,7 +108,9 @@ def get_Solar_values():
 
 def pubmsg (msg1, msg2):
  client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
+ print("Message1 send to MQTT Brocker", msg1)
  client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
+ print("Message2 send to MQTT Brocker", msg2)
  client.disconnect()
 
 if __name__=='__main__':
@@ -125,18 +130,19 @@ if __name__=='__main__':
     client_id = config['MQTT']['client_id']
     mqtt_username = config['MQTT']['mqtt_username']
     mqtt_password = config['MQTT']['mqtt_password']
-    mqtt_retain = config['MQTT']['mqtt_retain']
+    mqtt_retain = bool(config['MQTT']['mqtt_retain'])
 
     statetopic = "/STATE"
     sensortopic = "/SENSOR"
     topic1 = topic + statetopic
     topic2 = topic + sensortopic
-
+    print("Topic1= " + topic1)
+    print("Topic2= " + topic2)
 
     getDataCountPing = 0
     client = connectMQTT(mqtt_ip,int(mqtt_port))
     while getDataCountPing < int(ping_try_count):
-        #print(getDataCountPing)
+        print(getDataCountPing)
         if ping_ip(bosswerkIP) == True:
             get_Solar_values()
             break
@@ -145,5 +151,7 @@ if __name__=='__main__':
           time.sleep(3)
           if getDataCountPing == int(ping_try_count):
             startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":'MI600', "status":"Offline" }, skipkeys = True, allow_nan = False);
+            print("Message Topic1 if Offline", startmsg1)
             startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":0.0 }}, skipkeys = True, allow_nan = False);
+            print("Message Topic2 if Offline", startmsg2)
             pubmsg(startmsg1, startmsg2)
