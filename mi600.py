@@ -116,10 +116,10 @@ def get_Solar_values():
 
 def pubmsg (msg1, msg2):
  client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
- print("Message1 send to MQTT Brocker", msg1)
- time.sleep(1) # benötigt weil sonnst die 2 nachricht nicht abgesetzt wird
+ #print("Message1 send to MQTT Brocker", msg1) # for testing
+ time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird
  client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
- print("Message2 send to MQTT Brocker", msg2)
+ #print("Message2 send to MQTT Brocker", msg2) # for testing
  client.disconnect()
 
 if __name__=='__main__':
