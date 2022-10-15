@@ -21,14 +21,9 @@ def connectMQTT(ip, port):
  return client
 
 def sendData(client, webdata_now_p, webdata_today_e, webdata_total_e):
-    #https://github.com/fr00sch/bosswerk_mi600_solar
-    #startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":0.0 }}, skipkeys = True, allow_nan = False);
-    client = connectMQTT(mqtt_ip, int(mqtt_port))
-    startmsg2 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":client, "status":"Online" }, skipkeys = True, allow_nan = False);
-    startmsg1 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e, }}, skipkeys = True, allow_nan = False);
-    client.publish(topic & "/SENSOR", startmsg1, qos=0, retain=mqtt_retain)
-    client.publish(topic & "/STATE", startmsg2, qos=0, retain=mqtt_retain)    
-    client.disconnect()
+ startmsg2 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":client, "status":"Online" }, skipkeys = True, allow_nan = False);
+ startmsg1 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e, }}, skipkeys = True, allow_nan = False);
+ pubmsg(startmsg1, startmsg2)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -108,6 +103,11 @@ def get_Solar_values():
         r.close()
         print("Connection Closed")
 
+def pubmsg (msg1, msg2):
+ client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
+ client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
+ client.disconnect()
+
 if __name__=='__main__':
 
     config = configparser.ConfigParser()
@@ -127,7 +127,14 @@ if __name__=='__main__':
     mqtt_password = config['MQTT']['mqtt_password']
     mqtt_retain = config['MQTT']['mqtt_retain']
 
+    statetopic = "/STATE"
+    sensortopic = "/SENSOR"
+    topic1 = topic + statetopic
+    topic2 = topic + sensortopic
+
+
     getDataCountPing = 0
+    client = connectMQTT(mqtt_ip,int(mqtt_port))
     while getDataCountPing < int(ping_try_count):
         #print(getDataCountPing)
         if ping_ip(bosswerkIP) == True:
@@ -139,7 +146,4 @@ if __name__=='__main__':
           if getDataCountPing == int(ping_try_count):
             startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":'MI600', "status":"Offline" }, skipkeys = True, allow_nan = False);
             startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":0.0 }}, skipkeys = True, allow_nan = False);
-            client = connectMQTT(mqtt_ip,int(mqtt_port))
-            client.publish(topic & "/STATE", startmsg1, qos=0, retain=mqtt_retain)
-            client.publish(topic & "/SENSOR", startmsg2, qos=0, retain=mqtt_retain)
-            client.disconnect()
+            pubmsg(startmsg1, startmsg2)
