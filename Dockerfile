@@ -1,7 +1,7 @@
 FROM python:alpine
 
 LABEL authors="Pedro Tepe <support@hometepe.de>"
-LABEL version="0.4"
+LABEL version="0.6"
 LABEL description="Bosswerk Mi600 to MQTT \
 Bosswerk to Mqtt Mi300/Mi600 solar micro inverter \
 Quelle https://github.com/Skarabaen/BosswerkMI600 \
@@ -18,7 +18,7 @@ RUN pip3 install requests
 RUN pip install paho-mqtt
 
 COPY mi600.py /opt/mi600/
-COPY config.ini /opt/mi600/
+#COPY config.ini /opt/mi600/
 
 RUN touch crontab.tmp \
     && echo '*/5 * * * * /usr/local/bin/python /opt/mi600/mi600.py > /opt/mi600/crontab.log 2>&1' > crontab.tmp \
