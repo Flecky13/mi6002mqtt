@@ -23,7 +23,7 @@ def connectMQTT(ip, port):
 def sendData(client, webdata_now_p, webdata_today_e, webdata_total_e):
     #https://github.com/fr00sch/bosswerk_mi600_solar
     startmsg = json.dumps({"device": {"status": {"clientname":'MI600', "status":'Online', "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e, "lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}}, skipkeys = True, allow_nan = False);
-    client.publish(topic, startmsg, qos=0, retain=False)
+    client.publish(topic, startmsg, qos=0, retain=mqtt_retain)
     client.disconnect()
 
 # The callback for when the client receives a CONNACK response from the server.
