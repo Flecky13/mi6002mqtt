@@ -11,15 +11,15 @@ import configparser
 import csv
 
 def connectMQTT(ip, port):
- #https://github.com/fr00sch/bosswerk_mi600_solar
- #https://pypi.org/project/paho-mqtt/
- client = mqtt.Client()
- client.username_pw_set(mqtt_username, mqtt_password)
- client.on_connect = on_connect
- client.on_message = on_message
- #with mqtt.Client(client_id="0", clean_session=True, userdata=None, protocol="MQTTv311", transport="tcp") as client:
- client.connect(ip , port, 60)
- return client
+#https://github.com/fr00sch/bosswerk_mi600_solar
+#https://pypi.org/project/paho-mqtt/
+    client = mqtt.Client()
+    client.username_pw_set(mqtt_username, mqtt_password)
+    client.on_connect = on_connect
+    client.on_message = on_message
+#with mqtt.Client(client_id="0", clean_session=True, userdata=None, protocol="MQTTv311", transport="tcp") as client:
+    client.connect(ip , port, 60)
+    return client
 
 def savedata(d1, d2, d3):
     with open("data.csv",  mode='w') as file:
@@ -75,17 +75,17 @@ def ping_ip(current_ip_address):
                 return False
 
 def find_target_value(target, hp_source):
-  find_target = hp_source.find(target)
-  #print("target: {}" .format(find_target))
-  get_target_back = "-1"
-  if find_target > 0:
-    find_value_start = hp_source.find("\"", find_target)
-    #print("start: {}" .format(find_value_start)) # for testing
-    find_value_end = hp_source.find("\"", find_value_start+1)
-    #print("end: {}" .format(find_value_end)) # for testing
+    find_target = hp_source.find(target)
+    #print("target: {}" .format(find_target))
+    get_target_back = "-1"
+    if find_target > 0:
+        find_value_start = hp_source.find("\"", find_target)
+        #print("start: {}" .format(find_value_start)) # for testing
+        find_value_end = hp_source.find("\"", find_value_start+1)
+        #print("end: {}" .format(find_value_end)) # for testing
           
-  get_target_back = hp_source[find_value_start+1:find_value_end]
-  return(get_target_back)
+    get_target_back = hp_source[find_value_start+1:find_value_end]
+    return(get_target_back)
 
 def get_Solar_values():
     try:
@@ -130,12 +130,12 @@ def get_Solar_values():
         print("Connection Closed")
 
 def pubmsg (msg1, msg2):
- client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
- #print("Message1 send to MQTT Brocker", msg1) # for testing
- time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird warum ist noch schleierhaft
- client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
- #print("Message2 send to MQTT Brocker", msg2) # for testing
- client.disconnect()
+    client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
+    #print("Message1 send to MQTT Brocker", msg1) # for testing
+    time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird warum ist noch schleierhaft
+    client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
+    #print("Message2 send to MQTT Brocker", msg2) # for testing
+    client.disconnect()
 
 if __name__=='__main__':
 
@@ -163,10 +163,10 @@ if __name__=='__main__':
     #print("Topic1= " + topic1) # for testing
     #print("Topic2= " + topic2) # for testing
 
-    getDataCountPing = 0
+    getDataCountPing = 9
     client = connectMQTT(mqtt_ip,int(mqtt_port))
     while getDataCountPing < int(ping_try_count):
-        print(getDataCountPing)
+        print(getDataCountPing , "/" , ping_try_count )
         if ping_ip(bosswerkIP) == True:
             #power, today, total = readdata()
             get_Solar_values()
@@ -178,9 +178,9 @@ if __name__=='__main__':
 
             power, today, total = readdata()
             startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":'MI600', "status":"Offline" }, skipkeys = True, allow_nan = False);
-            #print("Message Topic1 if Offline", startmsg1) # for testing
-            startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":power, "today":today, "total":total  }}, skipkeys = True, allow_nan = False);
-            #print("Message Topic2 if Offline", startmsg2) # for testing
+            print("Message Topic1 if Offline", startmsg1) # for testing
+            startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":0.0, "today":today, "total":total  }}, skipkeys = True, allow_nan = False);
+            print("Message Topic2 if Offline", startmsg2) # for testing
             
             #sendData("Mi600", "123", "4.5", "6789") # for testing
 
