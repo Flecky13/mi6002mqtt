@@ -168,7 +168,7 @@ if __name__=='__main__':
     while getDataCountPing < int(ping_try_count):
         print(getDataCountPing)
         if ping_ip(bosswerkIP) == True:
-            power, today, total = readdata()
+            #power, today, total = readdata()
             get_Solar_values()
             break
         else:
