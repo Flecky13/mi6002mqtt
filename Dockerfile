@@ -18,7 +18,8 @@ RUN pip3 install requests
 RUN pip install paho-mqtt
 
 COPY mi600.py /opt/mi600/
-#COPY config.ini /opt/mi600/
+COPY data.csv /opt/mi600/
+#COPY config.ini /opt/mi600/  # if needed create your own file from config_sample.ini und uncomment this line
 
 RUN touch crontab.tmp \
     && echo '*/5 * * * * /usr/local/bin/python /opt/mi600/mi600.py > /opt/mi600/crontab.log 2>&1' > crontab.tmp \

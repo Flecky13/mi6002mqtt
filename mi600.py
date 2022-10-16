@@ -22,12 +22,12 @@ def connectMQTT(ip, port):
     return client
 
 def savedata(d1, d2, d3):
-    with open("data.csv",  mode='w') as file:
+    with open("/opt/mi600/data.csv",  mode='w') as file:
         file_writer = csv.writer(file, delimiter=',', quotechar='"',quoting=csv.QUOTE_MINIMAL)
         file_writer.writerow([d1,d2,d3])
 
 def readdata():
-    with open('data.csv', mode='r') as file:
+    with open('/opt/mi600/data.csv', mode='r') as file:
         csvfile = csv.reader(file, delimiter=',')
         
         for row in csvfile:
