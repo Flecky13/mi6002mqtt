@@ -21,17 +21,32 @@ def connectMQTT(ip, port):
  client.connect(ip , port, 60)
  return client
 
-def savedata(d1, d2, d3, d4):
+def savedata(d1, d2, d3):
     with open("data.csv",  mode='w') as file:
         file_writer = csv.writer(file, delimiter=',', quotechar='"',quoting=csv.QUOTE_MINIMAL)
-        file_writer.writerow([d1,d2,d3,d4])
+        file_writer.writerow([d1,d2,d3])
 
-def sendData(client, webdata_now_p, webdata_today_e, webdata_total_e):
- startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":client, "status":"Online" }, skipkeys = True, allow_nan = False);
+def readdata():
+    with open('data.csv', mode='r') as file:
+        csvfile = csv.reader(file, delimiter=',')
+        
+        for row in csvfile:
+            #print(row)
+            #print(row[0])
+            print(row[0],row[1],row[2],)
+
+        d1 = row[0]
+        d2 = row[1]
+        d3 = row[2]
+
+    return d1, d2, d3
+
+def sendData(webdata_now_p, webdata_today_e, webdata_total_e):
+ startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":'MI600', "status":"Online" }, skipkeys = True, allow_nan = False);
  #print("Message2 if Online", startmsg1) # for testing
  startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":webdata_now_p, "today":webdata_today_e, "total":webdata_total_e }}, skipkeys = True, allow_nan = False);
  #print("Message1 if Online", startmsg2) # for testing
- savedata(client, webdata_now_p, webdata_today_e, webdata_total_e)
+ savedata(webdata_now_p, webdata_today_e, webdata_total_e)
  pubmsg(startmsg1, startmsg2)
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -65,9 +80,9 @@ def find_target_value(target, hp_source):
   get_target_back = "-1"
   if find_target > 0:
     find_value_start = hp_source.find("\"", find_target)
-    #print("start: {}" .format(find_value_start))
+    #print("start: {}" .format(find_value_start)) # for testing
     find_value_end = hp_source.find("\"", find_value_start+1)
-    #print("end: {}" .format(find_value_end))
+    #print("end: {}" .format(find_value_end)) # for testing
           
   get_target_back = hp_source[find_value_start+1:find_value_end]
   return(get_target_back)
@@ -105,7 +120,7 @@ def get_Solar_values():
                     total = ret2
                     #print(ret2)
 
-                sendData(client, power, today, total)
+                sendData(power, today, total)
 
         else:
             print(r.status_code)
@@ -117,7 +132,7 @@ def get_Solar_values():
 def pubmsg (msg1, msg2):
  client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
  #print("Message1 send to MQTT Brocker", msg1) # for testing
- time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird
+ time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird warum ist noch schleierhaft
  client.publish(topic2, msg2, qos=0, retain=mqtt_retain)
  #print("Message2 send to MQTT Brocker", msg2) # for testing
  client.disconnect()
@@ -145,24 +160,27 @@ if __name__=='__main__':
     sensortopic = "/SENSOR"
     topic1 = topic + statetopic
     topic2 = topic + sensortopic
-    #print("Topic1= " + topic1)
-    #print("Topic2= " + topic2)
+    #print("Topic1= " + topic1) # for testing
+    #print("Topic2= " + topic2) # for testing
 
     getDataCountPing = 0
     client = connectMQTT(mqtt_ip,int(mqtt_port))
     while getDataCountPing < int(ping_try_count):
         print(getDataCountPing)
         if ping_ip(bosswerkIP) == True:
+            power, today, total = readdata()
             get_Solar_values()
             break
         else:
           getDataCountPing = getDataCountPing + 1
           time.sleep(3)
           if getDataCountPing == int(ping_try_count):
+
+            power, today, total = readdata()
             startmsg1 = json.dumps({"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "clientname":'MI600', "status":"Offline" }, skipkeys = True, allow_nan = False);
-            #print("Message Topic1 if Offline", startmsg1)
-            startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":0.0 }}, skipkeys = True, allow_nan = False);
-            #print("Message Topic2 if Offline", startmsg2)
+            #print("Message Topic1 if Offline", startmsg1) # for testing
+            startmsg2 = json.dumps({"Energy": {"lastDateUpdate":datetime.today().strftime('%Y-%m-%d %H:%M:%S'), "power":power, "today":today, "total":total  }}, skipkeys = True, allow_nan = False);
+            #print("Message Topic2 if Offline", startmsg2) # for testing
             
             #sendData("Mi600", "123", "4.5", "6789") # for testing
 
