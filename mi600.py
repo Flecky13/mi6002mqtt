@@ -130,6 +130,7 @@ def get_Solar_values():
         print("Connection Closed")
 
 def pubmsg (msg1, msg2):
+    client = connectMQTT(mqtt_ip,int(mqtt_port))
     client.publish(topic1, msg1, qos=0, retain=mqtt_retain)
     #print("Message1 send to MQTT Brocker", msg1) # for testing
     time.sleep(1) # benötigt weil sonnst die 2te nachrichten nicht abgesetzt wird warum ist noch schleierhaft
@@ -163,8 +164,8 @@ if __name__=='__main__':
     #print("Topic1= " + topic1) # for testing
     #print("Topic2= " + topic2) # for testing
 
-    getDataCountPing = 9
-    client = connectMQTT(mqtt_ip,int(mqtt_port))
+    getDataCountPing = 0
+    #client = connectMQTT(mqtt_ip,int(mqtt_port))
     while getDataCountPing < int(ping_try_count):
         print(getDataCountPing , "/" , ping_try_count )
         if ping_ip(bosswerkIP) == True:
