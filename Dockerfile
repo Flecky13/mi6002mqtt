@@ -6,7 +6,6 @@ LABEL description="Bosswerk Mi600 to MQTT \
 Bosswerk to Mqtt Mi300/Mi600 solar micro inverter \
 Quelle https://github.com/Skarabaen/BosswerkMI600 \
 \
-Aktuell noch als Test Version\
 kein Support, verwendung unter eigene verantwortung."
 
 LABEL org.opencontainers.image.source https://github.com/Flecky13/mi6002mqtt
