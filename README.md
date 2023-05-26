@@ -1,5 +1,5 @@
 # mi6002mqtt
-Bosswerk Mi600 to MQTT
+Bosswerk Mi600 or Deye Sun600 to MQTT
 
 Englisch:
 Update the file config_sample.ini and copy it to config.ini
