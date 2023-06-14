@@ -18,7 +18,7 @@ Im Docker file wird ein crontab eintrag erzeugt das den MI600 alle 5 Minuten aus
 
 I have reused some script parts from https://github.com/fr00sch/bosswerk_mi600_solar and extrat the config to config.ini
 
-Docker image without config.ini, "docker push p72t19/mi6002mqtt:v0.4"
+Docker image without config.ini, "docker push p72t19/mi6002mqtt:v0.5"
 https://hub.docker.com/repository/docker/p72t19/mi6002mqtt
 
 
